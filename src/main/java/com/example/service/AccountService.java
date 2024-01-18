@@ -12,7 +12,7 @@ import com.example.repository.AccountRepository;
 @Transactional
 public class AccountService {
 
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     public AccountService(AccountRepository accountRepository){
@@ -20,8 +20,11 @@ public class AccountService {
     }
 
     public Account registerAccount(Account account){
-        if (account.getPassword().length() <= 4){
+
+        if (account.getPassword().length() <= 4 || account.getUsername().length() == 0){
             return null;
+        } else if(accountRepository.findAccountByUsername(account.getUsername()) != null){
+            return new Account(null, "DUPLICATE", null);
         }
 
         return accountRepository.save(account);
@@ -30,4 +33,5 @@ public class AccountService {
     public Account loginAccount(Account account){
         return accountRepository.findAccountByUsernameAndPassword(account.getUsername(), account.getPassword());
     }
+
 }
